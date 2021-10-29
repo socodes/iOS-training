@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
@@ -35,22 +36,39 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
         picker.allowsEditing = true
         present(picker, animated: true, completion: nil)
     }
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         imageView.image = info[.originalImage] as? UIImage
         self.dismiss(animated: true, completion: nil)
     }
     @IBAction func saveButtonClicked(_ sender: Any) {
-        print("Save Button clicked")
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        
+        let newPainting = NSEntityDescription.insertNewObject(forEntityName: "Paintings", into: context)
+        
+        newPainting.setValue(nameText.text!, forKey:"name")
+        newPainting.setValue(artistText.text!, forKey:"artist")
+        
+        if let year = Int(yearText.text!){
+            newPainting.setValue(year, forKey:"year")
+        }
+        
+        newPainting.setValue(UUID(), forKey:"id")
+        
+        let data = imageView.image?.jpegData(compressionQuality: 0.5)
+        
+        do{
+            try context.save()
+            print("success")
+        }
+        catch{
+            print("error")
+        }
+        newPainting.setValue(data,forKey:"image")
+        
+        
     }
-    
-    /*
-    // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
