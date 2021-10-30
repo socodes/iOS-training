@@ -67,6 +67,17 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
         }
         newPainting.setValue(data,forKey:"image")
         
+        do {
+            try context.save()
+            print("success")
+        }catch {
+            print("error")
+        }
+        
+        NotificationCenter.default.post(name: NSNotification.Name("newData"), object: nil)
+        
+        self.navigationController?.popViewController(animated: true)
+        
         
     }
 
